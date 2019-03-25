@@ -3,7 +3,7 @@ const canvasText = document.createElement('canvas');
 canvasText.width = window.innerWidth;
 canvasText.height = window.innerHeight;
 canvasText.classList.add('canvasText');
-let text = 'k o ł o d z i e j'.toUpperCase();
+let text = 'm i c h a l'.toUpperCase();
 let textSize = 150;
 
 div.appendChild(canvasText);
@@ -33,6 +33,8 @@ class Circle {
         this.id = id;
         this.draw();
         this.canUpdate = true;
+        this.velX = 0;
+        this.velY = 0;
     }
 
     draw() {
@@ -40,11 +42,26 @@ class Circle {
         cCirc.arc(this.x, this.y, this.r, 0, Math.PI * 2, false);
         cCirc.fillStyle = this.color;
         cCirc.fill();
+        
+    }
+
+    moveCircle() {
+        this.x += this.velX;
+        this.y += this.velY;
+        if(this.velX !== 0){
+            this.velX += -(this.velX * 0.03);
+            if(this.velX <= 1 && this.velX >= -1) this.velX = 0;
+        }
+        if(this.velY !== 0){
+            this.velY += -(this.velY * 0.03);
+            if(this.velY <= 1 && this.velY >= -1) this.velY = 0;
+        }
     }
 
     update() {
         if(!this.canUpdate) return;
         this.r += 0.2;
+        
     }
 
     static checkIfHaveSpace(circ, circlesList){
@@ -57,10 +74,10 @@ class Circle {
         return haveSpace;
     }
 
-    static isInteract = (point, dot) => {
+    static isInteract = (point, dot, rOffset = 2) => {
         const distanceBetweenCirclesOrigin = Math.sqrt((point.x-dot.x) ** 2 + (point.y - dot.y) ** 2);
         if(point.r === undefined){
-            if(distanceBetweenCirclesOrigin  < dot.r + 2) return true;
+            if(distanceBetweenCirclesOrigin  < dot.r + rOffset) return true;
             else return false;
         }
         
@@ -132,9 +149,30 @@ setTimeout(() => {
 }, 10000);
 
 
-window.addEventListener('click', (e) => {
-    console.log(cText.getImageData(e.x, e.y, 5, 5));
-});
+// window.addEventListener('click', (e) => {
+//     console.log(cText.getImageData(e.x, e.y, 5, 5));
+// });
+
+const moveCircles = (e) => {
+    const mouseCoords = {
+        x: e.clientX,
+        y: e.clientY
+    }
+
+    circlesArray.forEach( circle => {
+        if(Circle.isInteract(mouseCoords, circle, 15)){
+            let velX = 20;
+            let velY = 20;
+            if(mouseCoords.x > circle.x) velX = -velX;
+            if(mouseCoords.y > circle.y) velY = -velY;
+
+            circle.velX = velX;
+            circle.velY = velY;
+        }
+    });
+}
+
+window.addEventListener('mousemove', (e) => moveCircles(e));
 
 const animate = () => {
     cCirc.clearRect(0, 0, canvasCircles.width, canvasCircles.height);
@@ -143,6 +181,7 @@ const animate = () => {
         circlesArray.forEach( circle => {
             if(!Circle.checkIfHaveSpace(circle, circlesArray)) circle.canUpdate = false;
             circle.update();
+            circle.moveCircle();
             circle.draw();
         })
     }
