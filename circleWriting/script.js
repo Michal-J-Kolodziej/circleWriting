@@ -3,8 +3,8 @@ const canvasText = document.createElement('canvas');
 canvasText.width = window.innerWidth;
 canvasText.height = window.innerHeight;
 canvasText.classList.add('canvasText');
-let text = 'm i c h a l'.toUpperCase();
-let textSize = 150;
+let text = 'lol'.toUpperCase().split('').join(' ');
+let textSize = 500;
 
 div.appendChild(canvasText);
 
@@ -135,11 +135,20 @@ const addCircle = () => {
         return pixelsToDraw[randomIndex];
     }
 
+    const getRandomColor = () => {
+        const getRandomNumber = () => {
+            return Math.floor(Math.random() * 256);
+        }
+
+        return `rgb(${getRandomNumber()}, ${getRandomNumber()}, ${getRandomNumber()})`;
+    }
+
+    const color = getRandomColor();
     const point = getRandomCoordinates();
 
     if(cText.getImageData(point.x, point.y, 1, 1).data[3] === 255){
-        if(circlesArray.length === 0) circlesArray.push(new Circle(point.x, point.y, '#ffa357', circlesArray.length));
-        else if(Circle.checkIfHaveSpace(point, circlesArray)) circlesArray.push(new Circle(point.x, point.y, '#ffa357', circlesArray.length));
+        if(circlesArray.length === 0) circlesArray.push(new Circle(point.x, point.y, color, circlesArray.length));
+        else if(Circle.checkIfHaveSpace(point, circlesArray)) circlesArray.push(new Circle(point.x, point.y, color, circlesArray.length));
     }
 }
 
@@ -161,8 +170,8 @@ const moveCircles = (e) => {
 
     circlesArray.forEach( circle => {
         if(Circle.isInteract(mouseCoords, circle, 15)){
-            let velX = 20;
-            let velY = 20;
+            let velX = 17;
+            let velY = 17;
             if(mouseCoords.x > circle.x) velX = -velX;
             if(mouseCoords.y > circle.y) velY = -velY;
 
